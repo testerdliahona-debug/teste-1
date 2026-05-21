@@ -24,7 +24,7 @@
             .modern-card { box-shadow: none !important; border: 1px solid #cbd5e1 !important; break-inside: avoid; }
         }
 
-        /* Estilo Moderno dos Cartões */
+        /* Estilo Moderno dos Cartões (Substituindo a tabela rígida) */
         .modern-card {
             border-radius: 12px;
             overflow: hidden;
@@ -39,13 +39,13 @@
             width: 100%;
         }
 
-        /* Linhas internas elegantes */
+        /* Linhas internas finas e elegantes */
         .modern-card td {
             border-bottom: 1px solid #dbeafe; /* blue-100 */
             border-right: 1px solid #dbeafe;
         }
         
-        /* Remove bordas redundantes */
+        /* Remove bordas redundantes nas extremidades */
         .modern-card table:last-child tr:last-child td {
             border-bottom: none;
         }
@@ -93,45 +93,29 @@
 
     <!-- Barra de Ferramentas Fixa Superior -->
     <div class="no-print fixed top-0 left-0 right-0 bg-white shadow-sm border-b border-blue-100 z-50 px-3 sm:px-6 py-2 sm:py-3 flex justify-between items-center overflow-x-auto">
-        <div class="flex items-center gap-2 pr-2 shrink-0">
-            <svg class="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-            <div class="flex flex-col">
-                <h1 class="font-bold text-blue-900 text-xs sm:text-sm leading-none">Ata em Nuvem</h1>
-                <span id="syncBadge" class="text-[9px] text-amber-600 font-semibold flex items-center gap-1">
-                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping"></span> Conectando...
-                </span>
-            </div>
+        <div class="flex items-center gap-2 pr-4 shrink-0">
+            <svg class="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            <h1 class="font-semibold text-blue-900 text-sm sm:text-base hidden sm:block">Gerador de Ata</h1>
+            <h1 class="font-semibold text-blue-900 text-sm sm:hidden">Ata</h1>
         </div>
         
-        <div class="flex items-center gap-2 shrink-0">
-            <!-- Código da Reunião Sincronizada -->
-            <div class="flex items-center bg-blue-50 border border-blue-200 rounded-lg px-2 py-1 gap-1">
-                <span class="text-[9px] font-bold text-blue-700 uppercase">Sala:</span>
-                <input id="roomCodeInput" type="text" class="w-16 sm:w-24 bg-transparent outline-none text-xs font-bold text-blue-900 uppercase" value="sao-leopoldo" title="Mude este código para criar ou acessar outra ata em grupo">
-            </div>
-
-            <!-- Botão de Configuração do Firebase Personalizado (GitHub Pages) -->
-            <button onclick="openConfigModal()" class="p-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-600 transition-colors" title="Configurar seu Firebase (para GitHub Pages)">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.3 1-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-            </button>
-
-            <div class="w-px h-6 bg-gray-200 self-center"></div>
-
+        <div class="flex gap-2 shrink-0">
             <!-- Botão de Bloqueio -->
-            <button id="lockBtn" onclick="toggleLock()" class="px-2 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm font-medium text-green-700 bg-green-50 hover:bg-green-100 border border-green-200 rounded-lg shadow-sm transition-all flex items-center gap-1">
+            <button id="lockBtn" onclick="toggleLock()" class="px-2 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium text-green-700 bg-green-50 hover:bg-green-100 border border-green-200 rounded-lg shadow-sm transition-all flex items-center gap-1 sm:gap-2">
                 <svg id="lockIconOpen" class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"></path></svg>
                 <svg id="lockIconClosed" class="w-3.5 h-3.5 sm:w-4 sm:h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                 <span id="lockText" class="hidden sm:inline">Liberado</span>
             </button>
 
-            <button onclick="limparFormulario()" class="px-2 py-1.5 text-xs sm:text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors">
-                Limpar
-            </button>
-            <button onclick="exportWord()" class="px-2 py-1.5 text-xs sm:text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-lg shadow-sm transition-colors flex items-center gap-1">
+            <div class="w-px h-6 bg-gray-200 self-center hidden sm:block"></div>
+
+            <button onclick="exportWord()" class="px-2 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-lg shadow-sm transition-colors flex items-center gap-1 sm:gap-2">
+                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM6 20V4h6v6h6v10H6z"/></svg>
                 <span class="hidden sm:inline">Exportar Word</span>
                 <span class="sm:hidden">Word</span>
             </button>
-            <button onclick="exportPDF()" class="px-2 py-1.5 text-xs sm:text-sm font-medium text-white bg-blue-700 hover:bg-blue-800 rounded-lg shadow-sm transition-colors flex items-center gap-1">
+            <button onclick="exportPDF()" class="px-2 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium text-white bg-blue-700 hover:bg-blue-800 rounded-lg shadow-sm transition-colors flex items-center gap-1 sm:gap-2">
+                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM6 20V4h6v6h6v10H6z"/></svg>
                 <span class="hidden sm:inline">Exportar PDF</span>
                 <span class="sm:hidden">PDF</span>
             </button>
@@ -159,11 +143,11 @@
                                     <div class="flex flex-wrap items-center sm:mr-2 gap-3 sm:gap-4">
                                         <div class="flex items-center">
                                             <span class="text-[10px] font-bold text-blue-600 uppercase tracking-wider mr-2">Data:</span>
-                                            <input id="data" type="date" class="px-1 py-0.5 outline-none text-gray-800 text-sm font-semibold rounded border border-blue-200 bg-white">
+                                            <input type="date" class="px-1 py-0.5 outline-none text-gray-800 text-sm font-semibold rounded border border-blue-200 bg-white">
                                         </div>
                                         <div class="flex items-center">
                                             <span class="text-[10px] font-bold text-blue-600 uppercase tracking-wider mr-2">Frequência:</span>
-                                            <input id="frequencia" type="text" class="w-16 px-1 py-0.5 outline-none text-gray-800 text-sm font-semibold text-center rounded border border-blue-200 bg-white" placeholder="0">
+                                            <input type="text" class="w-16 px-1 py-0.5 outline-none text-gray-800 text-sm font-semibold text-center rounded border border-blue-200 bg-white" placeholder="0">
                                         </div>
                                     </div>
                                 </div>
@@ -172,33 +156,33 @@
                         <tr class="flex flex-col sm:table-row">
                             <td class="p-2.5 block sm:table-cell align-top w-full sm:w-1/2">
                                 <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">Presidindo</label>
-                                <textarea id="presidindo" rows="1" class="input-field" placeholder="Nome completo"></textarea>
+                                <textarea rows="1" class="input-field" placeholder="Nome completo"></textarea>
                             </td>
                             <td class="p-2.5 block sm:table-cell align-top w-full sm:w-1/2">
                                 <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">Dirigindo</label>
-                                <textarea id="dirigindo" rows="1" class="input-field" placeholder="Nome completo"></textarea>
+                                <textarea rows="1" class="input-field" placeholder="Nome completo"></textarea>
                             </td>
                         </tr>
                         <tr class="flex flex-col sm:table-row">
                             <td colspan="2" class="p-2.5 block sm:table-cell align-top">
                                 <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">Reconhecimento de Autoridades e Visitantes</label>
-                                <textarea id="reconhecimento" class="input-field" rows="2" placeholder="Listar autoridades e visitantes, se houver"></textarea>
+                                <textarea class="input-field" rows="2" placeholder="Listar autoridades e visitantes, se houver"></textarea>
                             </td>
                         </tr>
                         <tr class="flex flex-col sm:table-row">
                             <td colspan="2" class="p-2.5 block sm:table-cell align-top">
                                 <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">Anúncios</label>
-                                <textarea id="anuncios" class="input-field" rows="2" placeholder="Descrever anúncios gerais"></textarea>
+                                <textarea class="input-field" rows="2" placeholder="Descrever anúncios gerais"></textarea>
                             </td>
                         </tr>
                         <tr class="flex flex-col sm:table-row">
                             <td class="p-2.5 block sm:table-cell align-top">
                                 <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">Regente</label>
-                                <textarea id="regente" rows="1" class="input-field" placeholder="Nome"></textarea>
+                                <textarea rows="1" class="input-field" placeholder="Nome"></textarea>
                             </td>
                             <td class="p-2.5 block sm:table-cell align-top">
                                 <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">Pianista</label>
-                                <textarea id="pianista" rows="1" class="input-field" placeholder="Nome"></textarea>
+                                <textarea rows="1" class="input-field" placeholder="Nome"></textarea>
                             </td>
                         </tr>
                     </tbody>
@@ -208,13 +192,13 @@
                         <tr class="flex flex-col sm:table-row">
                             <td colspan="2" class="p-2.5 block sm:table-cell align-top">
                                 <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">1º Hino</label>
-                                <textarea id="hino1" rows="1" class="input-field" placeholder="Nº e Título do Hino"></textarea>
+                                <textarea rows="1" class="input-field" placeholder="Nº e Título do Hino"></textarea>
                             </td>
                         </tr>
                         <tr class="flex flex-col sm:table-row">
                             <td colspan="2" class="p-2.5 block sm:table-cell align-top">
                                 <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">1ª Oração</label>
-                                <textarea id="oracao1" rows="1" class="input-field" placeholder="Quem proferiu a oração"></textarea>
+                                <textarea rows="1" class="input-field" placeholder="Quem proferiu a oração"></textarea>
                             </td>
                         </tr>
                     </tbody>
@@ -233,11 +217,11 @@
                         <tr class="flex flex-col sm:table-row">
                             <td class="p-2.5 w-full sm:w-1/2 block sm:table-cell align-top">
                                 <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">Chamados e Apoios</label>
-                                <textarea id="chamados" class="input-field" rows="3" placeholder="Digite os chamados e apoios apresentados..."></textarea>
+                                <textarea class="input-field" rows="3" placeholder="Digite os chamados e apoios apresentados..."></textarea>
                             </td>
                             <td class="p-2.5 w-full sm:w-1/2 block sm:table-cell align-top">
                                 <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">Desobrigações</label>
-                                <textarea id="desobrigacoes" class="input-field" rows="3" placeholder="Digite as desobrigações apresentadas..."></textarea>
+                                <textarea class="input-field" rows="3" placeholder="Digite as desobrigações apresentadas..."></textarea>
                             </td>
                         </tr>
                     </tbody>
@@ -256,7 +240,7 @@
                         <tr class="flex flex-col sm:table-row">
                             <td colspan="2" class="p-2.5 block sm:table-cell align-top">
                                 <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">Hino Sacramental</label>
-                                <textarea id="hino_sacramento" rows="1" class="input-field" placeholder="Nº e Título do Hino"></textarea>
+                                <textarea rows="1" class="input-field" placeholder="Nº e Título do Hino"></textarea>
                             </td>
                         </tr>
                     </tbody>
@@ -275,25 +259,25 @@
                         <tr class="flex flex-col sm:table-row">
                             <td colspan="2" class="p-2.5 block sm:table-cell align-top">
                                 <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">1º Orador</label>
-                                <textarea id="orador1" rows="1" class="input-field" placeholder="Nome do orador"></textarea>
+                                <textarea rows="1" class="input-field" placeholder="Nome do orador"></textarea>
                             </td>
                         </tr>
                         <tr class="flex flex-col sm:table-row">
                             <td colspan="2" class="p-2.5 block sm:table-cell align-top">
                                 <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">2º Orador</label>
-                                <textarea id="orador2" rows="1" class="input-field" placeholder="Nome do orador"></textarea>
+                                <textarea rows="1" class="input-field" placeholder="Nome do orador"></textarea>
                             </td>
                         </tr>
                         <tr class="flex flex-col sm:table-row">
                             <td colspan="2" class="p-2.5 block sm:table-cell align-top">
                                 <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">Hino Especial / Apresentação Musical</label>
-                                <textarea id="hino_especial" rows="1" class="input-field" placeholder="Nº e Título do Hino ou Detalhes da Apresentação"></textarea>
+                                <textarea rows="1" class="input-field" placeholder="Nº e Título do Hino ou Detalhes da Apresentação"></textarea>
                             </td>
                         </tr>
                         <tr class="flex flex-col sm:table-row">
                             <td colspan="2" class="p-2.5 block sm:table-cell align-top">
                                 <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">Último Orador</label>
-                                <textarea id="ultimo_orador" rows="1" class="input-field" placeholder="Nome do orador"></textarea>
+                                <textarea rows="1" class="input-field" placeholder="Nome do orador"></textarea>
                             </td>
                         </tr>
                     </tbody>
@@ -312,13 +296,13 @@
                         <tr class="flex flex-col sm:table-row">
                             <td colspan="2" class="p-2.5 block sm:table-cell align-top">
                                 <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">Último Hino</label>
-                                <textarea id="ultimo_hino" rows="1" class="input-field" placeholder="Nº e Título do Hino"></textarea>
+                                <textarea rows="1" class="input-field" placeholder="Nº e Título do Hino"></textarea>
                             </td>
                         </tr>
                         <tr class="flex flex-col sm:table-row">
                             <td colspan="2" class="p-2.5 block sm:table-cell align-top">
                                 <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">Última Oração</label>
-                                <textarea id="ultima_oracao" rows="1" class="input-field" placeholder="Quem proferiu a oração"></textarea>
+                                <textarea rows="1" class="input-field" placeholder="Quem proferiu a oração"></textarea>
                             </td>
                         </tr>
                     </tbody>
@@ -327,172 +311,6 @@
 
         </form>
     </div>
-
-    <!-- Modal de Configuração do Firebase Personalizado -->
-    <div id="configModal" class="no-print fixed inset-0 bg-black/50 z-[100] flex items-center justify-center hidden p-4">
-        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 border border-blue-100">
-            <h3 class="font-bold text-blue-950 text-lg mb-2">Configurar Banco de Dados</h3>
-            <p class="text-xs text-gray-600 mb-4">Se você hospedou esta ata no seu <strong>GitHub Pages</strong>, cole o objeto de configuração do seu Firebase abaixo para habilitar a sincronização na sua própria nuvem.</p>
-            
-            <textarea id="firebaseConfigInput" class="w-full h-32 border border-gray-300 rounded-lg p-2 text-xs font-mono mb-4 outline-none focus:border-blue-500" placeholder='{&#10;  "apiKey": "...",&#10;  "authDomain": "...",&#10;  "projectId": "...",&#10;  "storageBucket": "...",&#10;  "messagingSenderId": "...",&#10;  "appId": "..."&#10;}'></textarea>
-            
-            <div class="flex justify-end gap-2 text-sm">
-                <button onclick="closeConfigModal()" class="px-4 py-2 font-medium text-gray-600 hover:bg-gray-100 rounded-lg">Cancelar</button>
-                <button onclick="saveCustomFirebase()" class="px-4 py-2 font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg">Salvar e Reiniciar</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Importação de Módulos do Firebase de forma Dinâmica -->
-    <script type="module">
-
-        // Função para atualizar o Badge visual do status de Sincronização
-        window.setSyncStatus = function(status) {
-            const badge = document.getElementById('syncBadge');
-            if (!badge) return;
-            if (status === 'connected') {
-                badge.className = "text-[9px] text-green-600 font-semibold flex items-center gap-1";
-                badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Sincronizado`;
-            } else if (status === 'syncing') {
-                badge.className = "text-[9px] text-amber-600 font-semibold flex items-center gap-1";
-                badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping"></span> Salvando...`;
-            } else if (status === 'disconnected') {
-                badge.className = "text-[9px] text-gray-500 font-semibold flex items-center gap-1";
-                badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span> Sem Nuvem (Clique na ⚙️)`;
-            } else if (status === 'error') {
-                badge.className = "text-[9px] text-red-600 font-semibold flex items-center gap-1";
-                badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Erro de Conexão`;
-            }
-        }
-
-        // Inicializa o Firebase se houver configuração disponível
-        async function initFirebase() {
-            if (!firebaseConfig) {
-                setSyncStatus('disconnected');
-                return;
-            }
-
-            try {
-                const app = initializeApp(firebaseConfig);
-                auth = getAuth(app);
-                db = getFirestore(app);
-
-                // Autenticação (Requisito obrigatório de segurança)
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
-
-                onAuthStateChanged(auth, (user) => {
-                    currentUser = user;
-                    if (user) {
-                        setupRealtimeSync();
-                    } else {
-                        setSyncStatus('error');
-                    }
-                });
-
-            } catch (e) {
-                console.error("Erro ao conectar ao Firebase:", e);
-                setSyncStatus('error');
-            }
-        }
-
-        // Configura a escuta (Listener) da Ata atual no Firestore
-        function setupRealtimeSync() {
-            if (!db || !currentUser) return;
-
-            const roomCode = document.getElementById('roomCodeInput').value.trim().toLowerCase() || 'sao-leopoldo';
-
-            // Cancela escuta anterior se houver
-            if (unsubscribeAtaListener) {
-                unsubscribeAtaListener();
-            }
-
-            // Caminho Estrito da Coleção conforme as Regras Obrigatórias do Sandbox
-            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'atas', roomCode);
-
-            unsubscribeAtaListener = onSnapshot(docRef, (docSnap) => {
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    if (data && data.fields) {
-                        updateFormValues(data.fields);
-                    }
-                }
-                setSyncStatus('connected');
-            }, (err) => {
-                console.error("Erro ao receber dados:", err);
-                setSyncStatus('error');
-            });
-        }
-
-        // Atualiza campos do formulário vindos do Firestore
-        function updateFormValues(fields) {
-            const activeElementId = document.activeElement ? document.activeElement.id : null;
-
-            Object.keys(fields).forEach(id => {
-                const input = document.getElementById(id);
-                if (input && id !== activeElementId) {
-                    if (input.value !== fields[id]) {
-                        input.value = fields[id];
-                        // Dispara redimensionamento para textareas ajustarem a altura dinamicamente
-                        if (input.tagName === 'TEXTAREA') {
-                            input.style.height = 'auto';
-                            input.style.height = input.scrollHeight + 'px';
-                        }
-                    }
-                }
-            });
-        }
-
-        // Envia dados salvos com debounce de 500ms para evitar sobrecarga de gravações
-        window.queueCloudSave = function() {
-            if (!db || !currentUser || window.isLocked) return;
-
-            setSyncStatus('syncing');
-            clearTimeout(debounceTimer);
-
-            debounceTimer = setTimeout(async () => {
-                const roomCode = document.getElementById('roomCodeInput').value.trim().toLowerCase() || 'sao-leopoldo';
-                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'atas', roomCode);
-
-                const fields = {};
-                document.querySelectorAll('#ata-form input, #ata-form textarea').forEach(input => {
-                    if (input.id) {
-                        fields[input.id] = input.value;
-                    }
-                });
-
-                try {
-                    await setDoc(docRef, {
-                        fields: fields,
-                        updatedAt: new Date().toISOString(),
-                        updatedBy: currentUser.uid
-                    }, { merge: true });
-                    setSyncStatus('connected');
-                } catch (e) {
-                    console.error("Erro ao gravar no banco:", e);
-                    setSyncStatus('error');
-                }
-            }, 500);
-        }
-
-        // Escuta digitação em tempo real em qualquer input para salvar na nuvem
-        document.getElementById('ata-form').addEventListener('input', (e) => {
-            if (e.target.id) {
-                window.queueCloudSave();
-            }
-        });
-
-        // Escuta a mudança de Sala no input
-        document.getElementById('roomCodeInput').addEventListener('input', () => {
-            setupRealtimeSync();
-        });
-
-        // Inicia a execução do banco
-        initFirebase();
-    </script>
 
     <script>
         // Inicializa o auto-ajuste de altura das textareas
@@ -509,49 +327,17 @@
             this.style.height = this.scrollHeight + 'px';
         }
 
-        // Modais de Configuração do Firebase do Usuário (Para GitHub Pages)
-        function openConfigModal() {
-            const modal = document.getElementById('configModal');
-            const textarea = document.getElementById('firebaseConfigInput');
-            const saved = localStorage.getItem('custom_firebase_config');
-            if (saved) {
-                textarea.value = saved;
-            }
-            modal.classList.remove('hidden');
-        }
-
-        function closeConfigModal() {
-            document.getElementById('configModal').classList.add('hidden');
-        }
-
-        function saveCustomFirebase() {
-            const inputVal = document.getElementById('firebaseConfigInput').value.trim();
-            if (inputVal === "") {
-                localStorage.removeItem('custom_firebase_config');
-            } else {
-                try {
-                    JSON.parse(inputVal); // Valida formato JSON
-                    localStorage.setItem('custom_firebase_config', inputVal);
-                } catch(e) {
-                    alert("Formato de JSON inválido! Por favor, cole as credenciais do Firebase exatamente como fornecidas pelo console do Google.");
-                    return;
-                }
-            }
-            closeConfigModal();
-            location.reload(); // Recarrega para iniciar a conexão com as novas chaves
-        }
-
         // Função de Bloqueio/Desbloqueio
-        window.isLocked = false;
+        let isLocked = false;
         function toggleLock() {
-            window.isLocked = !window.isLocked;
+            isLocked = !isLocked;
             const btn = document.getElementById('lockBtn');
             const text = document.getElementById('lockText');
             const iconOpen = document.getElementById('lockIconOpen');
             const iconClosed = document.getElementById('lockIconClosed');
             const inputs = document.querySelectorAll('#ata-form input, #ata-form textarea');
 
-            if (window.isLocked) {
+            if (isLocked) {
                 // Estado Bloqueado (Vermelho)
                 btn.classList.remove('text-green-700', 'bg-green-50', 'hover:bg-green-100', 'border-green-200');
                 btn.classList.add('text-red-700', 'bg-red-50', 'hover:bg-red-100', 'border-red-200');
@@ -578,19 +364,13 @@
             }
         }
 
-        // Função para limpar o formulário
+        // Função para limpar o formulário (Mantida caso seja chamada internamente)
         function limparFormulario() {
-            if (window.isLocked) {
+            if (isLocked) {
                 alert("Desbloqueie a ata antes de limpar os dados.");
                 return;
             }
             document.getElementById("ata-form").reset();
-            
-            // Força o salvamento na nuvem para apagar para os demais celulares também
-            if (window.queueCloudSave) {
-                window.queueCloudSave();
-            }
-
             setTimeout(() => {
                 const textareas = document.querySelectorAll('textarea');
                 textareas.forEach(textarea => {
