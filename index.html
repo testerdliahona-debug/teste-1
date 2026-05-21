@@ -114,6 +114,9 @@
 </head>
 <body class="min-h-screen flex flex-col items-center pb-20 px-3 sm:px-0">
 
+    <!-- Entrada de arquivo oculta para importar rascunho -->
+    <input type="file" id="importFile" accept=".json" class="hidden" onchange="importDraft(event)">
+
     <!-- Barra de Ferramentas Fixa Superior Responsiva -->
     <div class="no-print fixed top-0 left-0 right-0 bg-white shadow-md border-b border-blue-100 z-50 px-3 sm:px-6 py-3 flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
         <div class="flex items-center gap-2 pr-4 shrink-0">
@@ -131,13 +134,23 @@
 
             <div class="w-px h-6 bg-gray-200 self-center hidden sm:block"></div>
 
-            <button onclick="exportWord()" class="px-2.5 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-lg shadow-sm transition-colors flex items-center gap-1 sm:gap-2" title="Exportar para arquivo Word (.doc) 100% linearizado">
-                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM6 20V4h6v6h6v10H6z"/></svg>
-                <span class="inline">Word</span>
+            <!-- Botões de Rascunho / Backup -->
+            <button onclick="exportDraft()" class="px-2.5 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg shadow-sm border border-blue-200 transition-colors flex items-center gap-1 sm:gap-2" title="Baixar arquivo de rascunho para editar depois">
+                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
+                <span class="inline">Salvar Rascunho</span>
             </button>
-            <button onclick="exportPDF()" class="px-2.5 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium text-white bg-blue-700 hover:bg-blue-800 rounded-lg shadow-sm transition-colors flex items-center gap-1 sm:gap-2">
-                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM6 20V4h6v6h6v10H6z"/></svg>
-                <span class="inline">PDF</span>
+
+            <button onclick="triggerImport()" class="px-2.5 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg shadow-sm border border-blue-200 transition-colors flex items-center gap-1 sm:gap-2" title="Carregar um arquivo de rascunho salvo no seu aparelho">
+                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                <span class="inline">Importar Rascunho</span>
+            </button>
+
+            <!-- Botão de Imprimir -->
+            <button onclick="window.print()" class="px-2.5 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm transition-colors flex items-center gap-1 sm:gap-2" title="Imprimir Ata ou Salvar em PDF">
+                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                </svg>
+                <span class="inline">Imprimir</span>
             </button>
         </div>
     </div>
@@ -336,13 +349,18 @@
     <div id="toast-container" class="no-print fixed bottom-5 right-5 z-[200] flex flex-col gap-2 pointer-events-none"></div>
 
     <script>
-        // Inicializa o auto-ajuste de altura das textareas
+        // Inicializa o auto-ajuste de altura das textareas e restaura o rascunho anterior
         document.addEventListener('DOMContentLoaded', () => {
             const textareas = document.querySelectorAll('textarea');
             textareas.forEach(textarea => {
                 textarea.addEventListener('input', autoResize);
-                autoResize.call(textarea);
             });
+
+            // Tenta recuperar rascunho salvo no navegador
+            loadDraftFromLocalStorage();
+
+            // Ativa o salvamento automático ao digitar
+            document.getElementById('ata-form').addEventListener('input', saveDraftToLocalStorage);
         });
 
         function autoResize() {
@@ -377,6 +395,96 @@
                     toast.remove();
                 }, 300);
             }, 3500);
+        }
+
+        // Salva os dados no armazenamento do navegador (LocalStorage)
+        function saveDraftToLocalStorage() {
+            if (isLocked) return;
+            const data = {};
+            document.querySelectorAll('#ata-form input, #ata-form textarea').forEach(element => {
+                data[element.id] = element.value;
+            });
+            localStorage.setItem('ata_sacramental_rascunho', JSON.stringify(data));
+        }
+
+        // Carrega dados recuperados do navegador ao abrir o site
+        function loadDraftFromLocalStorage() {
+            const saved = localStorage.getItem('ata_sacramental_rascunho');
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    preencherCampos(data);
+                    showToast("Rascunho anterior recuperado automaticamente!");
+                } catch (e) {
+                    console.error("Erro ao ler rascunho local", e);
+                }
+            }
+        }
+
+        // Preenche os campos do formulário com um objeto de dados
+        function preencherCampos(data) {
+            Object.keys(data).forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.value = data[id];
+                    if (element.tagName === 'TEXTAREA') {
+                        element.style.height = 'auto';
+                        element.style.height = element.scrollHeight + 'px';
+                    }
+                }
+            });
+        }
+
+        // Exportar rascunho de backup em arquivo JSON
+        function exportDraft() {
+            const data = {};
+            document.querySelectorAll('#ata-form input, #ata-form textarea').forEach(element => {
+                data[element.id] = element.value;
+            });
+
+            const jsonString = JSON.stringify(data, null, 2);
+            const blob = new Blob([jsonString], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            
+            const dataDef = data['data'] ? `_${data['data']}` : '';
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `Ata_Rascunho${dataDef}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            showToast("Arquivo de rascunho (.json) baixado com sucesso!");
+        }
+
+        // Aciona a caixa de escolha de arquivo
+        function triggerImport() {
+            if (isLocked) {
+                showToast("Desbloqueie a ata antes de carregar um rascunho.", "error");
+                return;
+            }
+            document.getElementById('importFile').click();
+        }
+
+        // Importar arquivo JSON selecionado
+        function importDraft(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    preencherCampos(data);
+                    saveDraftToLocalStorage(); // Salva no localstorage também
+                    showToast("Rascunho importado e preenchido com sucesso!");
+                } catch (error) {
+                    showToast("Erro ao importar: Arquivo inválido ou corrompido.", "error");
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = ''; // Reseta o input de arquivo
         }
 
         // Função de Bloqueio/Desbloqueio
@@ -416,318 +524,6 @@
                 });
                 showToast("Ata liberada para edições.");
             }
-        }
-
-        // Função para limpar o formulário (Mantida caso seja chamada internamente)
-        function limparFormulario() {
-            if (isLocked) {
-                showToast("Desbloqueie a ata antes de limpar os dados.", "error");
-                return;
-            }
-            document.getElementById("ata-form").reset();
-            setTimeout(() => {
-                const textareas = document.querySelectorAll('textarea');
-                textareas.forEach(textarea => {
-                    textarea.style.height = 'auto';
-                    if (textarea.rows > 1) {
-                         textarea.style.height = textarea.scrollHeight + 'px';
-                    }
-                });
-            }, 10);
-            showToast("Dados da ata limpos com sucesso.");
-        }
-
-        // Função para exportar para PDF com alta qualidade
-        function exportPDF() {
-            const elemento = document.getElementById('document-container');
-            
-            const opt = {
-                margin:       [10, 10, 15, 10], // Margens: topo, direita, baixo, esquerda
-                filename:     'Ata_Sacramental.pdf',
-                image:        { type: 'jpeg', quality: 1 },
-                // Configura largura virtual de desktop (1000px) para que o PDF nunca saia "esmagado"
-                html2canvas:  { scale: 2, useCORS: true, windowWidth: 1000 },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-
-            html2pdf().set(opt).from(elemento).save();
-            showToast("Gerando arquivo PDF para download...");
-        }
-
-        // Função para exportar para Word (DOC) com estrutura 100% linearizada (uma única coluna)
-        // Isso evita que colunas paralelas esmaguem em telas menores e elimina a rolagem horizontal!
-        function exportWord() {
-            // Helper para obter valores com segurança
-            const getVal = (id) => {
-                const el = document.getElementById(id);
-                return el ? el.value.trim() : ' ';
-            };
-
-            // Formatar Data
-            let dataOriginal = getVal('data');
-            let dataFormatada = ' ';
-            if (dataOriginal && dataOriginal !== ' ') {
-                const parts = dataOriginal.split('-');
-                dataFormatada = `${parts[2]}/${parts[1]}/${parts[0]}`;
-            }
-
-            const frequencia = getVal('frequencia');
-            const presidindo = getVal('presidindo');
-            const dirigindo = getVal('dirigindo');
-            const reconhecimento = getVal('reconhecimento');
-            const anuncios = getVal('anuncios');
-            const regente = getVal('regente');
-            const pianista = getVal('pianista');
-            const hino1 = getVal('hino1');
-            const oracao1 = getVal('oracao1');
-            const chamados = getVal('chamados');
-            const desobrigacoes = getVal('desobrigacoes');
-            const hino_sacramento = getVal('hino_sacramento');
-            const orador1 = getVal('orador1');
-            const orador2 = getVal('orador2');
-            const hino_especial = getVal('hino_especial');
-            const ultimo_orador = getVal('ultimo_orador');
-            const ultimo_hino = getVal('ultimo_hino');
-            const ultima_oracao = getVal('ultima_oracao');
-
-            // Geração de HTML otimizado para abertura em modo retrato no Word/Google Docs
-            const htmlContent = `
-            <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
-            <head>
-                <meta charset='utf-8'>
-                <title>Ata Sacramental - Ala São Leopoldo</title>
-                <style>
-                    body {
-                        font-family: 'Segoe UI', Arial, sans-serif;
-                        margin: 20px;
-                        color: #1f2937;
-                    }
-                    h1 {
-                        text-align: center;
-                        color: #1e3a8a;
-                        font-size: 16pt;
-                        font-weight: bold;
-                        margin-bottom: 25px;
-                        text-transform: uppercase;
-                    }
-                    .section-table {
-                        width: 100%;
-                        border-collapse: collapse;
-                        margin-bottom: 18px;
-                    }
-                    .section-header {
-                        background-color: #eff6ff !important;
-                        border: 1px solid #bfdbfe;
-                        padding: 10px 12px;
-                    }
-                    .section-title {
-                        font-size: 11pt;
-                        color: #1e3a8a;
-                        font-weight: bold;
-                        margin: 0;
-                        text-transform: uppercase;
-                    }
-                    .field-cell {
-                        border: 1px solid #bfdbfe;
-                        padding: 10px 12px;
-                        vertical-align: top;
-                    }
-                    .field-label {
-                        display: block;
-                        font-size: 8pt;
-                        color: #2563eb;
-                        font-weight: bold;
-                        text-transform: uppercase;
-                        margin-bottom: 4px;
-                    }
-                    .field-value {
-                        font-size: 11pt;
-                        color: #1f2937;
-                        min-height: 18px;
-                        white-space: pre-wrap;
-                        line-height: 1.4;
-                    }
-                </style>
-            </head>
-            <body>
-                <h1>ATA DE REUNIÃO SACRAMENTAL DA ALA SÃO LEOPOLDO</h1>
-
-                <!-- 1 - ABERTURA -->
-                <table class="section-table">
-                    <tr>
-                        <td class="section-header">
-                            <h2 class="section-title">1 - ABERTURA</h2>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="field-cell">
-                            <span class="field-label">Data</span>
-                            <div class="field-value">${dataFormatada}</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="field-cell">
-                            <span class="field-label">Frequência</span>
-                            <div class="field-value">${frequencia}</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="field-cell">
-                            <span class="field-label">Presidindo</span>
-                            <div class="field-value">${presidindo}</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="field-cell">
-                            <span class="field-label">Dirigindo</span>
-                            <div class="field-value">${dirigindo}</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="field-cell">
-                            <span class="field-label">Reconhecimento de Autoridades e Visitantes</span>
-                            <div class="field-value">${reconhecimento}</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="field-cell">
-                            <span class="field-label">Anúncios</span>
-                            <div class="field-value">${anuncios}</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="field-cell">
-                            <span class="field-label">Regente</span>
-                            <div class="field-value">${regente}</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="field-cell">
-                            <span class="field-label">Pianista</span>
-                            <div class="field-value">${pianista}</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="field-cell">
-                            <span class="field-label">1º Hino</span>
-                            <div class="field-value">${hino1}</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="field-cell">
-                            <span class="field-label">1ª Oração</span>
-                            <div class="field-value">${oracao1}</div>
-                        </td>
-                    </tr>
-                </table>
-
-                <!-- 2 - CHAMADOS / APOIOS / DESOBRIGAÇÕES -->
-                <table class="section-table">
-                    <tr>
-                        <td class="section-header">
-                            <h2 class="section-title">2 - CHAMADOS / APOIOS / DESOBRIGAÇÕES</h2>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="field-cell">
-                            <span class="field-label">Chamados e Apoios</span>
-                            <div class="field-value">${chamados}</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="field-cell">
-                            <span class="field-label">Desobrigações</span>
-                            <div class="field-value">${desobrigacoes}</div>
-                        </td>
-                    </tr>
-                </table>
-
-                <!-- 3 - SACRAMENTO -->
-                <table class="section-table">
-                    <tr>
-                        <td class="section-header">
-                            <h2 class="section-title">3 - SACRAMENTO</h2>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="field-cell">
-                            <span class="field-label">Hino Sacramental</span>
-                            <div class="field-value">${hino_sacramento}</div>
-                        </td>
-                    </tr>
-                </table>
-
-                <!-- 4 - DISCURSANTES -->
-                <table class="section-table">
-                    <tr>
-                        <td class="section-header">
-                            <h2 class="section-title">4 - DISCURSANTES</h2>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="field-cell">
-                            <span class="field-label">1º Orador</span>
-                            <div class="field-value">${orador1}</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="field-cell">
-                            <span class="field-label">2º Orador</span>
-                            <div class="field-value">${orador2}</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="field-cell">
-                            <span class="field-label">Hino Especial / Apresentação Musical</span>
-                            <div class="field-value">${hino_especial}</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="field-cell">
-                            <span class="field-label">Último Orador</span>
-                            <div class="field-value">${ultimo_orador}</div>
-                        </td>
-                    </tr>
-                </table>
-
-                <!-- 5 - ENCERRAMENTO -->
-                <table class="section-table">
-                    <tr>
-                        <td class="section-header">
-                            <h2 class="section-title">5 - ENCERRAMENTO</h2>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="field-cell">
-                            <span class="field-label">Último Hino</span>
-                            <div class="field-value">${ultimo_hino}</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="field-cell">
-                            <span class="field-label">Última Oração</span>
-                            <div class="field-value">${ultima_oracao}</div>
-                        </td>
-                    </tr>
-                </table>
-            </body>
-            </html>
-            `;
-
-            const blob = new Blob(['\ufeff', htmlContent], {
-                type: 'application/msword'
-            });
-            
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = 'Ata_Sacramental_Ala_Sao_Leopoldo.doc';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
-            
-            showToast("Documento Word (linear) gerado com sucesso!");
         }
     </script>
 </body>
