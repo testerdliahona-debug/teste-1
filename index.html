@@ -109,7 +109,7 @@
 
             <div class="w-px h-6 bg-gray-200 self-center hidden sm:block"></div>
 
-            <button onclick="exportWord()" class="px-2 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-lg shadow-sm transition-colors flex items-center gap-1 sm:gap-2">
+            <button onclick="exportWord()" class="px-2 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-lg shadow-sm transition-colors flex items-center gap-1 sm:gap-2" title="Exportar para arquivo Word (.doc) otimizado">
                 <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM6 20V4h6v6h6v10H6z"/></svg>
                 <span class="hidden sm:inline">Exportar Word</span>
                 <span class="sm:hidden">Word</span>
@@ -397,13 +397,20 @@
             html2pdf().set(opt).from(elemento).save();
         }
 
-        // Função para exportar para Word (DOC) mantendo a estrutura tabular
+        // Função para exportar para Word (DOC) com estrutura 100% limpa para Google Docs
         function exportWord() {
             const formElement = document.getElementById('document-container');
             const clone = formElement.cloneNode(true);
             
-            clone.classList.remove('shadow-lg', 'mt-24', 'mt-20', 'sm:mt-24');
-            
+            // 1. Remove as margens e sombras do layout do app
+            clone.removeAttribute('id');
+            clone.classList.remove('shadow-lg', 'mt-24', 'mt-20', 'sm:mt-24', 'border', 'border-blue-100', 'p-4', 'sm:p-10');
+            clone.style.width = '100%';
+            clone.style.maxWidth = '800px';
+            clone.style.margin = '0 auto';
+            clone.style.fontFamily = 'Segoe UI, Arial, sans-serif';
+
+            // 2. Substitui inputs e textareas por conteúdo textual simples (estilo Word)
             const inputs = formElement.querySelectorAll('input, textarea');
             const cloneInputs = clone.querySelectorAll('input, textarea');
             
@@ -416,28 +423,111 @@
                 
                 const span = document.createElement('span');
                 span.innerText = valor || ' ';
-                span.className = "valor-preenchido";
+                span.style.fontSize = '11pt';
+                span.style.color = '#1f2937';
+                span.style.display = 'block';
+                span.style.minHeight = '18px';
+                span.style.whiteSpace = 'pre-wrap';
+                span.style.fontFamily = 'Segoe UI, Arial, sans-serif';
                 
                 const parent = cloneInputs[index].parentNode;
                 parent.replaceChild(span, cloneInputs[index]);
             });
 
-            // Estrutura de estilo interpretada corretamente pelo Microsoft Word
+            // 3. Varre todo o clone e remove todas as classes CSS utilitárias do Tailwind,
+            // injetando estilos HTML inline tradicionais que o Word e o Google Docs amam.
+            const allCloneElements = clone.querySelectorAll('*');
+            allCloneElements.forEach((el) => {
+                const tagName = el.tagName.toLowerCase();
+                
+                // Mapeia classes de largura antes de limpá-las
+                const isHalfWidth = el.classList.contains('sm:w-1/2') || el.classList.contains('w-1/2');
+                const is20Percent = el.classList.contains('sm:w-[20%]') || el.classList.contains('w-[20%]');
+                const is80Percent = el.classList.contains('sm:w-[80%]') || el.classList.contains('w-[80%]');
+                const isHeaderBg = el.classList.contains('bg-blue-50/60');
+                const isFlexRow = el.classList.contains('flex') || el.classList.contains('justify-between');
+                const isFlexItem = el.classList.contains('flex') && el.classList.contains('items-center');
+
+                // Limpa completamente todas as classes utilitárias para evitar conflitos no editor do Word
+                el.className = '';
+
+                if (tagName === 'tr') {
+                    el.style.display = 'table-row';
+                } else if (tagName === 'td') {
+                    el.style.display = 'table-cell';
+                    el.style.border = '1px solid #bfdbfe';
+                    el.style.padding = '8px';
+                    el.style.verticalAlign = 'top';
+                    
+                    // Garante larguras exatas para que nenhuma coluna fique esmagada
+                    if (isHalfWidth) {
+                        el.style.width = '50%';
+                    } else if (is20Percent) {
+                        el.style.width = '20%';
+                    } else if (is80Percent) {
+                        el.style.width = '80%';
+                    }
+                } else if (tagName === 'table') {
+                    el.style.width = '100%';
+                    el.style.borderCollapse = 'collapse';
+                    el.style.marginBottom = '15px';
+                } else if (tagName === 'h1') {
+                    el.style.textAlign = 'center';
+                    el.style.color = '#1e3a8a';
+                    el.style.fontSize = '16pt';
+                    el.style.fontWeight = 'bold';
+                    el.style.marginBottom = '20px';
+                    el.style.textTransform = 'uppercase';
+                    el.style.fontFamily = 'Segoe UI, Arial, sans-serif';
+                } else if (tagName === 'h2') {
+                    el.style.fontSize = '11pt';
+                    el.style.color = '#1e3a8a';
+                    el.style.fontWeight = 'bold';
+                    el.style.margin = '0';
+                    el.style.fontFamily = 'Segoe UI, Arial, sans-serif';
+                } else if (tagName === 'label') {
+                    el.style.display = 'block';
+                    el.style.fontSize = '8pt';
+                    el.style.color = '#2563eb';
+                    el.style.fontWeight = 'bold';
+                    el.style.textTransform = 'uppercase';
+                    el.style.marginBottom = '3px';
+                    el.style.fontFamily = 'Segoe UI, Arial, sans-serif';
+                } else if (tagName === 'span' && el.style.fontSize !== '11pt') {
+                    el.style.fontSize = '8pt';
+                    el.style.color = '#2563eb';
+                    el.style.fontWeight = 'bold';
+                    el.style.textTransform = 'uppercase';
+                    el.style.fontFamily = 'Segoe UI, Arial, sans-serif';
+                }
+
+                // Ajusta os blocos de cartões modernos
+                if (el.tagName === 'DIV' && !isFlexRow && !isFlexItem) {
+                    el.style.fontFamily = 'Segoe UI, Arial, sans-serif';
+                }
+
+                // Mantém os cabeçalhos com o fundo azul suave tradicional
+                if (isHeaderBg) {
+                    el.style.backgroundColor = '#eff6ff';
+                }
+
+                // Corrige problemas com estruturas flexbox no Word
+                if (isFlexRow) {
+                    el.style.display = 'block';
+                    el.style.width = '100%';
+                } else if (isFlexItem) {
+                    el.style.display = 'inline-block';
+                    el.style.marginRight = '20px';
+                }
+            });
+
             const cabecalhoWord = `
                 <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
                 <head>
                     <meta charset='utf-8'>
                     <title>Ata Sacramental</title>
                     <style>
-                        body { font-family: 'Segoe UI', Arial, sans-serif; }
-                        h1 { text-align: center; color: #1e3a8a; font-size: 16pt; margin-bottom: 20px;}
-                        .modern-card { margin-bottom: 15px; }
-                        table { width: 100%; border-collapse: collapse; }
-                        td { border: 1px solid #bfdbfe; padding: 6px; vertical-align: top; display: table-cell !important; width: auto !important; }
-                        .bg-blue-50\\/60, td[colspan="2"] { background-color: #eff6ff !important; }
-                        h2 { font-size: 11pt; color: #1e3a8a; margin: 0; padding: 2px 0; }
-                        label, .block { display: block; font-size: 8pt; color: #2563eb; font-weight: bold; text-transform: uppercase; margin-bottom: 3px; }
-                        .valor-preenchido { font-size: 11pt; color: #1f2937; display: block; min-height: 16px; white-space: pre-wrap; }
+                        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 20px; }
                     </style>
                 </head>
                 <body>
