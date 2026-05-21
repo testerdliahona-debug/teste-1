@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ata de Reunião Sacramental</title>
+    <!-- Tailwind CSS para Estilização Moderna -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- HTML2PDF para exportação de PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f7ff;
+        }
+        
+        @media print {
+            .no-print { display: none !important; }
+            .print-border { border-color: #cbd5e1 !important; }
+            body { background-color: white; }
+            #document-container { box-shadow: none !important; margin: 0 !important; padding: 0 !important; }
+        }
+
+        input, textarea {
+            transition: all 0.2s ease;
+            resize: none;
+            overflow: hidden;
+        }
+        
+        input:focus, textarea:focus {
+            background-color: #f8fafc;
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center pb-20">
+
+    <!-- Barra de Ferramentas Fixa Superior -->
+    <div class="no-print fixed top-0 left-0 right-0 bg-white shadow-sm border-b border-blue-100 z-50 px-3 sm:px-6 py-2 sm:py-3 flex justify-between items-center">
+        <div class="flex items-center gap-2">
+            <svg class="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            <h1 class="font-semibold text-blue-900 text-sm sm:text-base hidden sm:block">Gerador de Ata</h1>
+            <h1 class="font-semibold text-blue-900 text-sm sm:hidden">Ata</h1>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="limparFormulario()" class="px-2 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors">
+                <span class="hidden sm:inline">Limpar Dados</span>
+                <span class="sm:hidden">Limpar</span>
+            </button>
+            <button onclick="exportWord()" class="px-2 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-lg shadow-sm transition-colors flex items-center gap-1 sm:gap-2">
+                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM6 20V4h6v6h6v10H6z"/></svg>
+                <span class="hidden sm:inline">Exportar Word</span>
+                <span class="sm:hidden">Word</span>
+            </button>
+            <button onclick="exportPDF()" class="px-2 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium text-white bg-blue-700 hover:bg-blue-800 rounded-lg shadow-sm transition-colors flex items-center gap-1 sm:gap-2">
+                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM6 20V4h6v6h6v10H6z"/></svg>
+                <span class="hidden sm:inline">Exportar PDF</span>
+                <span class="sm:hidden">PDF</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Container Principal do Documento -->
+    <div id="document-container" class="mt-20 sm:mt-24 w-full max-w-[850px] bg-white rounded-xl shadow-lg border border-blue-100 p-4 sm:p-10 print:mt-0 print:border-none print:shadow-none">
+        
+        <!-- Cabeçalho -->
+        <div class="flex flex-col items-center mb-6 sm:mb-8 relative">
+            <h1 class="text-lg sm:text-xl font-bold text-blue-900 tracking-wide text-center">ATA DE REUNIÃO SACRAMENTAL</h1>
+        </div>
+
+        <form id="ata-form" onsubmit="event.preventDefault();">
+            
+            <!-- 1 - ABERTURA -->
+            <table class="w-full border-collapse mb-6">
+                <tbody>
+                    <tr class="flex flex-col sm:table-row">
+                        <td colspan="2" class="border-2 border-blue-200 bg-blue-50/50 p-2 sm:rounded-t-lg block sm:table-cell">
+                            <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 sm:gap-0">
+                                <h2 class="font-bold text-blue-900 text-sm ml-1">1 - ABERTURA</h2>
+                                <div class="flex items-center sm:mr-2">
+                                    <span class="text-[10px] font-bold text-blue-600 uppercase tracking-wider mr-2">Frequência:</span>
+                                    <input type="text" class="w-16 px-1 py-0.5 outline-none text-gray-800 text-sm font-semibold text-center rounded border border-blue-200 bg-white" placeholder="0">
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="flex flex-col sm:table-row">
+                        <td class="border-2 border-blue-200 p-2.5 w-full sm:w-1/2 block sm:table-cell align-top">
+                            <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">Ala</label>
+                            <input type="text" class="w-full outline-none text-gray-800 text-sm font-medium" value="Ala São Leopoldo" readonly>
+                        </td>
+                        <td class="border-2 border-blue-200 p-2.5 w-full sm:w-1/2 block sm:table-cell align-top">
+                            <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">Data</label>
+                            <input type="date" class="w-full outline-none text-gray-800 text-sm">
+                        </td>
+                    </tr>
+                    <tr class="flex flex-col sm:table-row">
+                        <td class="border-2 border-blue-200 p-2.5 block sm:table-cell align-top">
+                            <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">Presidindo</label>
+                            <textarea rows="1" class="w-full outline-none text-gray-800 text-sm" placeholder="Nome completo"></textarea>
+                        </td>
+                        <td class="border-2 border-blue-200 p-2.5 block sm:table-cell align-top">
+                            <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">Dirigindo</label>
+                            <textarea rows="1" class="w-full outline-none text-gray-800 text-sm" placeholder="Nome completo"></textarea>
+                        </td>
+                    </tr>
+                    <tr class="flex flex-col sm:table-row">
+                        <td colspan="2" class="border-2 border-blue-200 p-2.5 block sm:table-cell align-top">
+                            <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">Reconhecimento de Autoridades e Visitantes</label>
+                            <textarea class="w-full outline-none text-gray-800 text-sm" rows="2" placeholder="Listar autoridades e visitantes, se houver"></textarea>
+                        </td>
+                    </tr>
+                    <tr class="flex flex-col sm:table-row">
+                        <td colspan="2" class="border-2 border-blue-200 p-2.5 block sm:table-cell align-top">
+                            <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">Anúncios</label>
+                            <textarea class="w-full outline-none text-gray-800 text-sm" rows="2" placeholder="Descrever anúncios gerais"></textarea>
+                        </td>
+                    </tr>
+                    <tr class="flex flex-col sm:table-row">
+                        <td class="border-2 border-blue-200 p-2.5 block sm:table-cell align-top">
+                            <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">Regente</label>
+                            <textarea rows="1" class="w-full outline-none text-gray-800 text-sm" placeholder="Nome"></textarea>
+                        </td>
+                        <td class="border-2 border-blue-200 p-2.5 block sm:table-cell align-top">
+                            <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">Organista / Pianista</label>
+                            <textarea rows="1" class="w-full outline-none text-gray-800 text-sm" placeholder="Nome"></textarea>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <table class="w-full border-collapse mb-6 sm:-mt-6">
+                <tbody>
+                    <tr class="flex flex-col sm:table-row">
+                        <td class="border-x-2 border-b-2 border-blue-200 p-2.5 w-full sm:w-[20%] block sm:table-cell align-top">
+                            <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">1º Hino Nº</label>
+                            <input type="text" class="w-full outline-none text-gray-800 text-sm text-left sm:text-center font-semibold" placeholder="000">
+                        </td>
+                        <td class="border-x-2 border-b-2 border-blue-200 p-2.5 w-full sm:w-[80%] block sm:table-cell align-top">
+                            <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">Nome do Hino</label>
+                            <textarea rows="1" class="w-full outline-none text-gray-800 text-sm" placeholder="Título"></textarea>
+                        </td>
+                    </tr>
+                    <tr class="flex flex-col sm:table-row">
+                        <td colspan="2" class="border-x-2 border-b-2 border-blue-200 p-2.5 block sm:table-cell align-top">
+                            <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">1ª Oração</label>
+                            <textarea rows="1" class="w-full outline-none text-gray-800 text-sm" placeholder="Quem proferiu a oração"></textarea>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- 2 - CHAMADOS / APOIOS / DESOBRIGAÇÕES -->
+            <table class="w-full border-collapse mb-6">
+                <tbody>
+                    <tr class="flex flex-col sm:table-row">
+                        <td colspan="2" class="border-2 border-blue-200 bg-blue-50/50 p-2 block sm:table-cell">
+                            <h2 class="font-bold text-blue-900 text-sm ml-1">2 - CHAMADOS / APOIOS / DESOBRIGAÇÕES</h2>
+                        </td>
+                    </tr>
+                    <tr class="flex flex-col sm:table-row">
+                        <td class="border-2 border-blue-200 p-2.5 w-full sm:w-1/2 block sm:table-cell align-top">
+                            <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">Chamados e Apoios</label>
+                            <textarea class="w-full outline-none text-gray-800 text-sm" rows="3" placeholder="Digite os chamados e apoios apresentados..."></textarea>
+                        </td>
+                        <td class="border-2 border-t-0 sm:border-t-2 border-blue-200 p-2.5 w-full sm:w-1/2 block sm:table-cell align-top">
+                            <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">Desobrigações</label>
+                            <textarea class="w-full outline-none text-gray-800 text-sm" rows="3" placeholder="Digite as desobrigações apresentadas..."></textarea>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- 3 - SACRAMENTO -->
+            <table class="w-full border-collapse mb-6">
+                <tbody>
+                    <tr class="flex flex-col sm:table-row">
+                        <td colspan="2" class="border-2 border-blue-200 bg-blue-50/50 p-2 block sm:table-cell">
+                            <h2 class="font-bold text-blue-900 text-sm ml-1">3 - SACRAMENTO</h2>
+                        </td>
+                    </tr>
+                    <tr class="flex flex-col sm:table-row">
+                        <td class="border-x-2 border-b-2 border-blue-200 p-2.5 w-full sm:w-[20%] block sm:table-cell align-top">
+                            <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">Hino Nº</label>
+                            <input type="text" class="w-full outline-none text-gray-800 text-sm text-left sm:text-center font-semibold" placeholder="000">
+                        </td>
+                        <td class="border-x-2 border-b-2 border-blue-200 p-2.5 w-full sm:w-[80%] block sm:table-cell align-top">
+                            <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">Nome do Hino Sacramental</label>
+                            <textarea rows="1" class="w-full outline-none text-gray-800 text-sm" placeholder="Título"></textarea>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- 4 - DISCURSANTES -->
+            <table class="w-full border-collapse mb-6">
+                <tbody>
+                    <tr class="flex flex-col sm:table-row">
+                        <td colspan="2" class="border-2 border-blue-200 bg-blue-50/50 p-2 block sm:table-cell">
+                            <h2 class="font-bold text-blue-900 text-sm ml-1">4 - DISCURSANTES</h2>
+                        </td>
+                    </tr>
+                    <tr class="flex flex-col sm:table-row">
+                        <td colspan="2" class="border-x-2 border-b-2 border-blue-200 p-2.5 block sm:table-cell align-top">
+                            <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">1º Orador</label>
+                            <textarea rows="1" class="w-full outline-none text-gray-800 text-sm" placeholder="Nome do orador"></textarea>
+                        </td>
+                    </tr>
+                    <tr class="flex flex-col sm:table-row">
+                        <td colspan="2" class="border-x-2 border-b-2 border-blue-200 p-2.5 block sm:table-cell align-top">
+                            <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">2º Orador</label>
+                            <textarea rows="1" class="w-full outline-none text-gray-800 text-sm" placeholder="Nome do orador"></textarea>
+                        </td>
+                    </tr>
+                    <tr class="flex flex-col sm:table-row">
+                        <td class="border-x-2 border-b-2 border-blue-200 p-2.5 w-full sm:w-[20%] block sm:table-cell align-top">
+                            <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">Hino Especial Nº</label>
+                            <input type="text" class="w-full outline-none text-gray-800 text-sm text-left sm:text-center font-semibold" placeholder="Se houver">
+                        </td>
+                        <td class="border-x-2 border-b-2 border-blue-200 p-2.5 w-full sm:w-[80%] block sm:table-cell align-top">
+                            <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">Nome / Apresentação Musical</label>
+                            <textarea rows="1" class="w-full outline-none text-gray-800 text-sm" placeholder="Detalhes da apresentação"></textarea>
+                        </td>
+                    </tr>
+                    <tr class="flex flex-col sm:table-row">
+                        <td colspan="2" class="border-x-2 border-b-2 border-blue-200 p-2.5 block sm:table-cell align-top">
+                            <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">Último Orador</label>
+                            <textarea rows="1" class="w-full outline-none text-gray-800 text-sm" placeholder="Nome do orador"></textarea>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- 5 - ENCERRAMENTO -->
+            <table class="w-full border-collapse mb-2">
+                <tbody>
+                    <tr class="flex flex-col sm:table-row">
+                        <td colspan="2" class="border-2 border-blue-200 bg-blue-50/50 p-2 block sm:table-cell">
+                            <h2 class="font-bold text-blue-900 text-sm ml-1">5 - ENCERRAMENTO</h2>
+                        </td>
+                    </tr>
+                    <tr class="flex flex-col sm:table-row">
+                        <td class="border-x-2 border-b-2 border-blue-200 p-2.5 w-full sm:w-[20%] block sm:table-cell align-top">
+                            <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">Último Hino Nº</label>
+                            <input type="text" class="w-full outline-none text-gray-800 text-sm text-left sm:text-center font-semibold" placeholder="000">
+                        </td>
+                        <td class="border-x-2 border-b-2 border-blue-200 p-2.5 w-full sm:w-[80%] block sm:table-cell align-top">
+                            <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">Nome do Hino</label>
+                            <textarea rows="1" class="w-full outline-none text-gray-800 text-sm" placeholder="Título"></textarea>
+                        </td>
+                    </tr>
+                    <tr class="flex flex-col sm:table-row">
+                        <td colspan="2" class="border-x-2 border-b-2 border-blue-200 p-2.5 sm:rounded-b-lg block sm:table-cell align-top">
+                            <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">Última Oração</label>
+                            <textarea rows="1" class="w-full outline-none text-gray-800 text-sm" placeholder="Quem proferiu a oração"></textarea>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </form>
+    </div>
+
+    <script>
+        // Inicializa o auto-ajuste de altura das textareas
+        document.addEventListener('DOMContentLoaded', () => {
+            const textareas = document.querySelectorAll('textarea');
+            textareas.forEach(textarea => {
+                textarea.addEventListener('input', autoResize);
+                autoResize.call(textarea);
+            });
+        });
+
+        function autoResize() {
+            this.style.height = 'auto';
+            this.style.height = this.scrollHeight + 'px';
+        }
+
+        // Função para limpar o formulário
+        function limparFormulario() {
+            document.getElementById("ata-form").reset();
+            // Reajusta a altura das textareas após limpar
+            setTimeout(() => {
+                const textareas = document.querySelectorAll('textarea');
+                textareas.forEach(textarea => {
+                    textarea.style.height = 'auto';
+                    if (textarea.rows > 1) {
+                         textarea.style.height = textarea.scrollHeight + 'px';
+                    }
+                });
+            }, 10);
+        }
+
+        // Função para exportar para PDF com alta qualidade
+        function exportPDF() {
+            const elemento = document.getElementById('document-container');
+            
+            const opt = {
+                margin:       10,
+                filename:     'Ata_Sacramental.pdf',
+                image:        { type: 'jpeg', quality: 1 },
+                // O windowWidth garante que o PDF seja impresso com o layout de computador (lado a lado)
+                html2canvas:  { scale: 2, useCORS: true, windowWidth: 1000 },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(elemento).save();
+        }
+
+        // Função para exportar para Word (DOC) mantendo a estrutura
+        function exportWord() {
+            const formElement = document.getElementById('document-container');
+            const clone = formElement.cloneNode(true);
+            
+            clone.classList.remove('shadow-lg', 'mt-24', 'mt-20', 'sm:mt-24');
+            
+            const inputs = formElement.querySelectorAll('input, textarea');
+            const cloneInputs = clone.querySelectorAll('input, textarea');
+            
+            inputs.forEach((input, index) => {
+                let valor = input.value;
+                if(input.type === 'date' && valor) {
+                    const parts = valor.split('-');
+                    valor = `${parts[2]}/${parts[1]}/${parts[0]}`;
+                }
+                
+                const span = document.createElement('span');
+                span.innerText = valor || ' ';
+                span.className = "valor-preenchido";
+                
+                const parent = cloneInputs[index].parentNode;
+                parent.replaceChild(span, cloneInputs[index]);
+            });
+
+            const cabecalhoWord = `
+                <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+                <head>
+                    <meta charset='utf-8'>
+                    <title>Ata Sacramental</title>
+                    <style>
+                        body { font-family: 'Segoe UI', Arial, sans-serif; }
+                        h1 { text-align: center; color: #1e3a8a; font-size: 16pt; margin-bottom: 20px;}
+                        table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+                        td { border: 1px solid #bfdbfe; padding: 6px; vertical-align: top; display: table-cell !important; width: auto !important; }
+                        .bg-blue-50\\/50, tr:first-child td[colspan="2"] { background-color: #eff6ff !important; }
+                        h2 { font-size: 11pt; color: #1e3a8a; margin: 0; padding: 2px 0; }
+                        label, .block { display: block; font-size: 8pt; color: #2563eb; font-weight: bold; text-transform: uppercase; margin-bottom: 3px; }
+                        .valor-preenchido { font-size: 11pt; color: #1f2937; display: block; min-height: 16px; white-space: pre-wrap; }
+                    </style>
+                </head>
+                <body>
+            `;
+            
+            const rodapeWord = "</body></html>";
+            const conteudoHTML = cabecalhoWord + clone.innerHTML + rodapeWord;
+            
+            const blob = new Blob(['\ufeff', conteudoHTML], {
+                type: 'application/msword'
+            });
+            
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'Ata_Sacramental.doc';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
