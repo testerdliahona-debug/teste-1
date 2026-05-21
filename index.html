@@ -6,8 +6,6 @@
     <title>Ata de Reunião Sacramental</title>
     <!-- Tailwind CSS para Estilização Moderna -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- HTML2PDF para exportação de PDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
@@ -114,9 +112,6 @@
 </head>
 <body class="min-h-screen flex flex-col items-center pb-20 px-3 sm:px-0">
 
-    <!-- Entrada de arquivo oculta para importar rascunho -->
-    <input type="file" id="importFile" accept=".json" class="hidden" onchange="importDraft(event)">
-
     <!-- Barra de Ferramentas Fixa Superior Responsiva -->
     <div class="no-print fixed top-0 left-0 right-0 bg-white shadow-md border-b border-blue-100 z-50 px-3 sm:px-6 py-3 flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
         <div class="flex items-center gap-2 pr-4 shrink-0">
@@ -133,17 +128,6 @@
             </button>
 
             <div class="w-px h-6 bg-gray-200 self-center hidden sm:block"></div>
-
-            <!-- Botões de Rascunho / Backup -->
-            <button onclick="exportDraft()" class="px-2.5 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg shadow-sm border border-blue-200 transition-colors flex items-center gap-1 sm:gap-2" title="Baixar arquivo de rascunho para editar depois">
-                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
-                <span class="inline">Salvar Rascunho</span>
-            </button>
-
-            <button onclick="triggerImport()" class="px-2.5 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg shadow-sm border border-blue-200 transition-colors flex items-center gap-1 sm:gap-2" title="Carregar um arquivo de rascunho salvo no seu aparelho">
-                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                <span class="inline">Importar Rascunho</span>
-            </button>
 
             <!-- Botão de Imprimir -->
             <button onclick="window.print()" class="px-2.5 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm transition-colors flex items-center gap-1 sm:gap-2" title="Imprimir Ata ou Salvar em PDF">
@@ -225,13 +209,13 @@
                         <tr class="block sm:table-row">
                             <td colspan="2" class="p-2.5 block sm:table-cell align-top">
                                 <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">1º Hino</label>
-                                <textarea id="hino1" rows="1" class="input-field" placeholder="Nº e Título do Hino"></textarea>
+                                <textarea id="hino1" rows="1" class="input-field" placeholder="Nº do hino e nome"></textarea>
                             </td>
                         </tr>
                         <tr class="block sm:table-row">
                             <td colspan="2" class="p-2.5 block sm:table-cell align-top">
                                 <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">1ª Oração</label>
-                                <textarea id="oracao1" rows="1" class="input-field" placeholder="Quem proferiu a oração"></textarea>
+                                <textarea id="oracao1" rows="1" class="input-field" placeholder="Quem vai realizar a oração"></textarea>
                             </td>
                         </tr>
                     </tbody>
@@ -250,11 +234,11 @@
                         <tr class="block sm:table-row">
                             <td class="p-2.5 w-full sm:w-1/2 block sm:table-cell align-top">
                                 <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">Chamados e Apoios</label>
-                                <textarea id="chamados" class="input-field" rows="3" placeholder="Digite os chamados e apoios apresentados..."></textarea>
+                                <textarea id="chamados" class="input-field" rows="3" placeholder="Escreva aqui chamados e apoios"></textarea>
                             </td>
                             <td class="p-2.5 w-full sm:w-1/2 block sm:table-cell align-top">
                                 <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">Desobrigações</label>
-                                <textarea id="desobrigacoes" class="input-field" rows="3" placeholder="Digite as desobrigações apresentadas..."></textarea>
+                                <textarea id="desobrigacoes" class="input-field" rows="3" placeholder="Escreva aqui as desobrigações a serem feitas"></textarea>
                             </td>
                         </tr>
                     </tbody>
@@ -273,7 +257,7 @@
                         <tr class="block sm:table-row">
                             <td colspan="2" class="p-2.5 block sm:table-cell align-top">
                                 <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">Hino Sacramental</label>
-                                <textarea id="hino_sacramento" rows="1" class="input-field" placeholder="Nº e Título do Hino"></textarea>
+                                <textarea id="hino_sacramento" rows="1" class="input-field" placeholder="Nº do hino e nome"></textarea>
                             </td>
                         </tr>
                     </tbody>
@@ -304,7 +288,7 @@
                         <tr class="block sm:table-row">
                             <td colspan="2" class="p-2.5 block sm:table-cell align-top">
                                 <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">Hino Especial / Apresentação Musical</label>
-                                <textarea id="hino_especial" rows="1" class="input-field" placeholder="Nº e Título do Hino ou Detalhes da Apresentação"></textarea>
+                                <textarea id="hino_especial" rows="1" class="input-field" placeholder="Nº do hino e nome ou Detalhes da Apresentação"></textarea>
                             </td>
                         </tr>
                         <tr class="block sm:table-row">
@@ -329,13 +313,13 @@
                         <tr class="block sm:table-row">
                             <td colspan="2" class="p-2.5 block sm:table-cell align-top">
                                 <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">Último Hino</label>
-                                <textarea id="ultimo_hino" rows="1" class="input-field" placeholder="Nº e Título do Hino"></textarea>
+                                <textarea id="ultimo_hino" rows="1" class="input-field" placeholder="Nº do hino e nome"></textarea>
                             </td>
                         </tr>
                         <tr class="block sm:table-row">
                             <td colspan="2" class="p-2.5 block sm:table-cell align-top">
                                 <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">Última Oração</label>
-                                <textarea id="ultima_oracao" rows="1" class="input-field" placeholder="Quem proferiu a oração"></textarea>
+                                <textarea id="ultima_oracao" rows="1" class="input-field" placeholder="Quem vai realizar a oração"></textarea>
                             </td>
                         </tr>
                     </tbody>
@@ -433,58 +417,6 @@
                     }
                 }
             });
-        }
-
-        // Exportar rascunho de backup em arquivo JSON
-        function exportDraft() {
-            const data = {};
-            document.querySelectorAll('#ata-form input, #ata-form textarea').forEach(element => {
-                data[element.id] = element.value;
-            });
-
-            const jsonString = JSON.stringify(data, null, 2);
-            const blob = new Blob([jsonString], { type: "application/json" });
-            const url = URL.createObjectURL(blob);
-            
-            const dataDef = data['data'] ? `_${data['data']}` : '';
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `Ata_Rascunho${dataDef}.json`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
-            
-            showToast("Arquivo de rascunho (.json) baixado com sucesso!");
-        }
-
-        // Aciona a caixa de escolha de arquivo
-        function triggerImport() {
-            if (isLocked) {
-                showToast("Desbloqueie a ata antes de carregar um rascunho.", "error");
-                return;
-            }
-            document.getElementById('importFile').click();
-        }
-
-        // Importar arquivo JSON selecionado
-        function importDraft(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    preencherCampos(data);
-                    saveDraftToLocalStorage(); // Salva no localstorage também
-                    showToast("Rascunho importado e preenchido com sucesso!");
-                } catch (error) {
-                    showToast("Erro ao importar: Arquivo inválido ou corrompido.", "error");
-                }
-            };
-            reader.readAsText(file);
-            event.target.value = ''; // Reseta o input de arquivo
         }
 
         // Função de Bloqueio/Desbloqueio
